@@ -18,7 +18,7 @@ from django.urls import path
 import rooms.views as room_views
 
 urlpatterns = [
-    path('', room_views.newroom),
+    path('', room_views.viewRoom),
     path('view/', room_views.viewRoom),
     path('add/', room_views.addroom),
 ]

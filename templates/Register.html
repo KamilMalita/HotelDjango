@@ -1,0 +1,31 @@
+{% include 'navbar.html' %}
+<html lang="en">
+{% block navbar %}
+{% endblock %}
+<head>
+    <title>Sign</title>
+</head>
+<body>
+<div class="col-md-6">
+    <form>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                   placeholder="Enter email" name="email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Password" name="pass">
+            {% if msg %}
+                <p class="text-danger">{{ msg }}</p>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary" formmethod="post" formaction="/postsign/">Register</button>
+    </form>
+</div>
+</body>
+
+
+</html>

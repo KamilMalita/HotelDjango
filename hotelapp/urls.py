@@ -19,8 +19,10 @@ from rooms.urls import urlpatterns as room_patterns
 from .views import *
 
 urlpatterns = [
+    path('', home_request),
     path('admin/', admin.site.urls),
     path('room/', include(room_patterns)),
-    path('', signIN),
-    path('postsign/', postsign)
+    path('account/register/', register_request),
+    path('account/login/', login_request),
+    path('account/logout/', logout_request),
 ]
