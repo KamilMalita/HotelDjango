@@ -18,6 +18,7 @@ from django.urls import path, include
 from rooms.urls import urlpatterns as room_patterns
 from .views import *
 
+
 urlpatterns = [
     path('', home_request),
     path('admin/', admin.site.urls),

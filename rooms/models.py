@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Room(models.Model):
@@ -8,3 +9,10 @@ class Room(models.Model):
     description = models.TextField()
 
 
+class Reservation(models.Model):
+    id_customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='id_customer')
+    id_room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    start_reservation = models.DateField()
+    end_reservation = models.DateField()
+    id_staff = models.ForeignKey(User, on_delete=models.SET(f'{User.first_name} {User.last_name}'), blank=True, null=True, related_name='id_staff')
+    price_reservation = models.IntegerField()

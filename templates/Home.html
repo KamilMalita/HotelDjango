@@ -4,10 +4,24 @@
 <head>
     <title>Title</title>
 {% csrf_token %}
-{% block navbar %}
-{% endblock %}
+<style>
+    body{
+        font-family: "Segoe UI";
+    }
+    h1{
+        border-radius: 25pt;
+        background-color: rgba(255, 255, 255, 0.6);
+        padding: 10pt 10pt 10pt;
+        width: 600pt;
+        align: center;
+        position: center;
+    }
+</style>
 </head>
 <body>
-Home
+{% block navbar %}
+{% endblock %}
+<h1 style="color: black" align="center">Here will be home content</h1>
+
 </body>
 </html>

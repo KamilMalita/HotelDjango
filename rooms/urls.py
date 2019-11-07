@@ -21,4 +21,7 @@ urlpatterns = [
     path('', room_views.viewRoom),
     path('view/', room_views.viewRoom),
     path('add/', room_views.addroom),
+    path('delete/<int:room_id>/', room_views.deleteroom),
+    path('reservation/', room_views.reservation),
+    path('search/', room_views.search),
 ]
