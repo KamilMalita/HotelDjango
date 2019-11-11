@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+{% include 'navbar.html' %}
+<html lang="en">
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            font-family: "Segoe UI";
+        }
+
+        .col-md-4 {
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+        }
+    </style>
+</head>
+<body>
+{% block navbar %}
+{% endblock %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h1 class="mt-2" style="color: whitesmoke">Search rooms</h1>
+            <hr class="mt-0 mb-4">
+
+        </div>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <form class="form_room">
+        {% if err %}
+            <p class="text-danger" style="text-align: center">{{ err }}</p>
+        {% endif %}
+        {% csrf_token %}
+        <div class="form-group">
+            <label style="color: black" for="customdate">Time of visit:</label>
+            <input type="hidden" name="customdate" id="customdate">
+            <div class="form-control" id="reportrange"
+                 style="background: #fff; border-radius: 3pt; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                <i class="fa fa-calendar"></i>&nbsp;
+                <span></span> <i class="fa fa-caret-down"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label style="color: black" for="number">Number of adults:</label>
+            <input type="number" class="form-control" id="number" aria-describedby="emailHelp"
+                   placeholder="Enter number of adults" name="number" value="2" min="1">
+            {% if msg %}
+                <p class="text-danger">{{ msg }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label style="color: black" for="myCheck">Price does not matter:</label>
+            <input type="checkbox" id="myCheck" onclick="myFunction()" name="myCheck">
+        </div>
+        <div class="form-group" id="min">
+            <label style="color: black" for="price_min">Minimum price for night in room (zł):</label>
+            <input type="number" class="form-control" id="price_min" placeholder="Enter price as number"
+                   value="50" min="1" name="price_min">
+        </div>
+        {% if price_err %}
+            <p class="text-danger" style="text-align: center">{{ price_err }}</p>
+        {% endif %}
+        <div class="form-group" id="max">
+            <label style="color: black" for="price_max">Maximum price for night in room (zł):</label>
+            <input type="number" class="form-control" id="price_max" placeholder="Enter price as number"
+                   value="500" min="1" name="price_max">
+        </div>
+        <button type="submit" class="btn btn-light" formmethod="post" formaction="/room/search/reservation/">Search for
+            rooms
+        </button>
+    </form>
+</div>
+
+<script type="text/javascript">
+    function myFunction() {
+        // Get the checkbox
+        var checkBox = document.getElementById("myCheck");
+        // Get the output text
+        var min = document.getElementById("min");
+        var max = document.getElementById("max");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true) {
+            min.style.display = "none"
+            max.style.display = "none"
+        } else {
+            min.style.display = "block"
+            max.style.display = "block"
+
+        }
+    }
+
+    $(function () {
+        var end = moment().add(5, 'days');
+        var start = moment();
+
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+            $("#customdate").val(start.format('YYYY-MM-DD') + ':' + end.format('YYYY-MM-DD'));
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        }
+
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Tomorrow': [moment(), moment().add(1, 'days')],
+                'Next 2 Days': [moment(), moment().add(2, 'days')],
+                'Next 5 Days': [moment(), moment().add(5, 'days')],
+                'Next 7 Days': [moment(), moment().add(7, 'days')]
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
+</script>
+</body>
+</html>

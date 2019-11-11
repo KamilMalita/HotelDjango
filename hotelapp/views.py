@@ -7,6 +7,8 @@ from .forms import RegisterForm
 
 
 def home_request(request):
+    if request.method == 'POST':
+        print(request.POST)
     return render(request, 'Home.html')
 
 
@@ -36,9 +38,8 @@ def register_request(request):
         return render(request, "Register.html")
 
 
-def login_request(request):
+def login_request(request): 
     if not request.user.is_authenticated:
-        print('Siema')
         if request.method == 'POST':
             username = request.POST['username']
             password = request.POST['password']
