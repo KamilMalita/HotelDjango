@@ -42,31 +42,44 @@
             <tr>
                 <td style="color: black;">{{ room.name }}</td>
                 <td style="color: black;">{{ room.description }}</td>
-                <td style="color: black;text-align: center" class="sum">{{ room.price }}*{{ length }}</td>
-{#                <form style="display: inline;">#}
-                    <td>
-{#                        <button type="submit" class="btn btn-light" id="button{{ room.id }}"#}
-{#                                formmethod="post" formaction="/room/search/reservation/{{ room.id }}:{{ start_date }}:{{ end_date }}/">#}
-{#                            Reservation#}
-{#                        </button>#}
-                        {% csrf_token %}
-                        <button class="btn btn-light" id="button{{ room.id }}" onclick="reservation_room({{ room.id }})">
-                            Reservation
-                        </button>
-                    </td>
-{#                </form>#}
+                <td style="color: black;text-align: center" id="price{{ room.id }}" class="sum">{{ room.price }}*{{ length }}</td>
+                {#                <form style="display: inline;">#}
+                <td>
+                    {#                        <button type="submit" class="btn btn-light" id="button{{ room.id }}"#}
+                    {#                                formmethod="post" formaction="/room/search/reservation/{{ room.id }}:{{ start_date }}:{{ end_date }}/">#}
+                    {#                            Reservation#}
+                    {#                        </button>#}
+                    {% csrf_token %}
+                    <button class="btn btn-light" id="button{{ room.id }}" onclick="reservation_room({{ room.id }})">
+                        Reservation
+                    </button>
+                </td>
+                {#                </form>#}
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
-<button onclick="requestPost()">Siema</button>
 <script>
     function reservation_room(room_id) {
+        if(confirm(`Are you sure that you want to book room: ${room_id}`)){
         var btn = document.getElementById(`button${room_id}`);
-        console.log(btn);
+        var price = document.getElementById(`price${room_id}`);
+        price = price.innerText;
         btn.disabled = true;
+        var x = document.getElementsByName("csrfmiddlewaretoken");
+        x = x[0].value;
+        console.log(x);
+        var xhr = new XMLHttpRequest();
+        var url = 'room/';
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(`start_date={{ start_date }}&end_date={{ end_date }}&room_id=${room_id}&price=${price}&csrfmiddlewaretoken=${x}`);
+        console.log(xhr.getAllResponseHeaders());
+        console.log(xhr.response)}
+
     }
+
     function load_function() {
         var column = document.getElementsByClassName('sum');
         for (var i = 0; i < column.length; i++) {
@@ -76,6 +89,7 @@
             column[i].innerHTML = after;
         }
     }
+
     function requestPost() {
         var x = document.getElementsByName("csrfmiddlewaretoken");
         x = x[0].value;

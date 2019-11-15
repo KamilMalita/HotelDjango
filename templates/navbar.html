@@ -44,7 +44,7 @@
                 </li>
                 <li style="border-left:1px solid gray;height:auto"></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/room/view">Offer</a>
+                    <a class="nav-link" href="/room">Offer</a>
                 </li>
 
                 {% if user.is_superuser or user.is_staff %}
@@ -55,7 +55,8 @@
                             Administration
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/room/add">AddRoom</a>
+                            <a class="dropdown-item" href="/room/add">Manage Rooms</a>
+                            <a class="dropdown-item" href="/room/reservations">Manage Reservations</a>
                             {#                                        <a class="dropdown-item" href="#">Another action</a>#}
                             {#                                        <div class="dropdown-divider"></div>#}
                             {#                                        <a class="dropdown-item" href="#">Something else here</a>#}
@@ -68,6 +69,17 @@
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
             <ul class="navbar-nav mr-right">
+                {% if user.is_authenticated and not user.is_superuser and not user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Profile
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/room/reservations">My Reservations</a>
+                            </div>
+                    </li>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="/account/logout">Logout</a>

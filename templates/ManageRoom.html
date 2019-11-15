@@ -3,9 +3,10 @@
 <html lang="en">
 <head>
     <style>
-        body{
+        body {
             font-family: "Segoe UI";
         }
+
         .form-group {
             padding-bottom: 10pt;
         }
@@ -25,16 +26,18 @@
             border-radius: 12pt;
             background-color: rgba(255, 255, 255, 0.6);
         }
-        .col-md-4{
+
+        .col-md-4 {
 
         }
-        h1{
+
+        h1 {
             color: whitesmoke;
         }
     </style>
     <title>Manage Rooms</title>
 </head>
-<body>
+<body onload="sort_index()">
 <div class="container">
     <div class="row justify-content-center">
         <div>
@@ -95,7 +98,7 @@
             <tbody>
             {% for room in all_rooms %}
                 <tr>
-                    <th scope="row">{{ room.id }}</th>
+                    <th scope="row" class="lp"></th>
                     <td style="color: black;">{{ room.number }}</td>
                     <td style="color: black;">{{ room.name }}</td>
                     <td style="color: black;">{{ room.description }}</td>
@@ -114,6 +117,15 @@
     </div>
 
 </div>
-
+<script>
+    function sort_index() {
+        var index = 1;
+        var lp = document.getElementsByClassName('lp');
+        for(var i=0; i<lp.length; i++){
+            lp[i].innerHTML=index;
+            index++;
+        }
+    }
+</script>
 </body>
 </html>

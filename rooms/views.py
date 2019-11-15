@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .models import Room, Reservation
 from .forms import RoomForm
 import datetime
@@ -18,11 +18,11 @@ def addroom(request):
                     new_room.save()
                     return HttpResponseRedirect('/room/view')
                 else:
-                    rooms = Room.objects.all()
+                    rooms = Room.objects.all().order_by('number')
                     return render(request, "ManageRoom.html",
                                   {'err': f'{form.errors}', 'all_rooms': rooms})
             else:
-                rooms = Room.objects.all()
+                rooms = Room.objects.all().order_by('number')
                 return render(request, "ManageRoom.html",
                               {'msg': 'The room number is already in use.', 'all_rooms': rooms})
         else:
@@ -33,7 +33,7 @@ def addroom(request):
 
 
 def viewRoom(request):
-    rooms = Room.objects.all()
+    rooms = Room.objects.all().order_by('number')
     return render(request, "ManageRoom.html", {'all_rooms': rooms})
 
 
@@ -81,5 +81,35 @@ def search(request):
         return redirect('/')
 
 
-def reservation_take(request, all_string):
-    return render(request, "Back.html")
+def reservation_take(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        print(request.POST)
+        start_date = str(request.POST['start_date']).replace('-', '')
+        end_date = str(request.POST['end_date']).replace('-', '')
+        room_id = request.POST['room_id']
+        price = request.POST['price']
+        user = request.user.id
+        try:
+            if request.user.is_superuser or request.user.is_staff:
+                create_reservation = Reservation.objects.create(start_reservation=start_date, end_reservation=end_date,
+                                                                price_reservation=price, id_room_id=room_id,
+                                                                id_customer_id=user, id_staff_id=user)
+            else:
+                create_reservation = Reservation.objects.create(start_reservation=start_date, end_reservation=end_date,
+                                                                price_reservation=price, id_room_id=room_id,
+                                                                id_customer_id=user)
+            create_reservation.save()
+        except Exception as e:
+            print(e)
+        return HttpResponse('<h1>Page was found</h1>')
+    return redirect('/')
+
+
+def my_reservations(request):
+    if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            all_reservations = Reservation.objects.all().order_by('start_reservation')
+            return render(request, "MyReservations.html", {'all_reservations': all_reservations})
+        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by('start_reservation')
+        return render(request, "MyReservations.html", {'all_reservations': all_reservations})
+    return render(request, "Home.html")

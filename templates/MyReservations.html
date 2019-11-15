@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'navbar.html' %}
+<head>
+    <style>
+        .col-md-11 {
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 25pt;
+            padding: 15pt 10pt 10pt 20pt;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Reservations</title>
+</head>
+<body onload="sortdate()">
+<div class="col-md-11">
+    <table class="table" style="text-align: center">
+        <thead class="thead-light" style="color: black">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Number of reservation</th>
+            <th scope="col">Arrival</th>
+            <th scope="col">Departure</th>
+            <th scope="col">Number of room</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for reservation in all_reservations %}
+            <tr class="class_reservation">
+                <th scope="row" class="lp"></th>
+                <td style="color: black;">{{ reservation.id }}</td>
+                <td class="class_start" style="color: black;">{{ reservation.start_reservation }}</td>
+                <td class="class_end" style="color: black;">{{ reservation.end_reservation }}</td>
+                <td style="color: black;">{{ reservation.id_room.number }}</td>
+                <form style="display: inline;">{% csrf_token %}
+                    <td>
+                        <button type="submit" class="btn btn-light" formmethod="post"
+                                formaction="/room/reservations/">Delete
+                        </button>
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<button onclick="reverse_display()">Siema</button>
+<script>
+    function sort_index() {
+        var index = 1;
+        var lp = document.getElementsByClassName('lp');
+        var cl_reser = document.getElementsByClassName('class_reservation');
+        var start = document.getElementsByClassName('class_start');
+        var end = document.getElementsByClassName('class_end');
+        for (var i = 0; i < lp.length; i++) {
+            if (cl_reser[i].style.display === '') {
+                lp[i].innerHTML = index;
+                start[i].innerHTML = start[i].innerHTML.replace(/-/g, "").substr(0, 4) + '-' + start[i].innerHTML.replace(/-/g, "").substr(4, 2) + '-' + start[i].innerHTML.replace(/-/g, "").substr(6, 2);
+                end[i].innerHTML = end[i].innerHTML.replace(/-/g, "").substr(0, 4) + '-' + end[i].innerHTML.replace(/-/g, "").substr(4, 2) + '-' + end[i].innerHTML.replace(/-/g, "").substr(6, 2);
+                index++;
+            }
+        }
+    }
+
+    function yesno() {
+        if (confirm('Are you sure?'))
+            console.log('Niestety usunąłeś');
+    }
+
+    function reverse_display() {
+        var cl_reser = document.getElementsByClassName('class_reservation');
+        for (var i = 0; i < cl_reser.length; i++) {
+            if (cl_reser[i].style.display === 'none')
+                cl_reser[i].style.display = '';
+            else
+                cl_reser[i].style.display = 'none';
+        }
+        sort_index()
+    }
+
+    function sortdate(value='growing') {
+        // new onload body
+        var Now = new Date();
+        var intFormatDate = Now.toISOString().slice(0, 10).replace(/-/g, "");
+        var cl_reser = document.getElementsByClassName('class_reservation');
+        for (var i = 0; i < cl_reser.length; i++) {
+            if(cl_reser[i].getElementsByClassName('class_end')[0].innerHTML.replace(/-/g, "")<=intFormatDate)
+            cl_reser[i].style.display='none';
+        }
+        sort_index()
+    }
+</script>
+</body>
+</html>
