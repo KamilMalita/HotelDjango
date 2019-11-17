@@ -81,7 +81,7 @@ def search(request):
         return redirect('/')
 
 
-def reservation_take(request):
+def reservation_create(request):
     if request.method == 'POST' and request.user.is_authenticated:
         print(request.POST)
         start_date = str(request.POST['start_date']).replace('-', '')
@@ -112,4 +112,26 @@ def my_reservations(request):
             return render(request, "MyReservations.html", {'all_reservations': all_reservations})
         all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by('start_reservation')
         return render(request, "MyReservations.html", {'all_reservations': all_reservations})
+    return render(request, "Home.html")
+
+
+def hotel_occupancy(request):
+    """"Documentation for a function.
+    This function returns fundamentals info about occupancy of Hotel.
+    """
+    if request.user.is_staff or request.user.is_superuser:
+        if request.method == 'POST':
+            date_all = request.POST['occupancy_date']
+            date_start = str(date_all).split(':')[0]
+            date_end = str(date_all).split(':')[1]
+            list_busy_rooms = Reservation.objects.filter(start_reservation__lt=date_end.replace('-', '')).filter(
+                end_reservation__gt=date_start.replace('-', ''))
+            tab_exclude = []
+            for liss in list_busy_rooms:
+                tab_exclude.append(liss.id_room.number)
+            rooms = Room.objects.all()
+            free_rooms = rooms.exclude(number__in=tab_exclude)
+            busy_room = int(len(rooms))-int(len(free_rooms))
+            return render(request, "HotelOccupancy.html", {'busy_rooms': busy_room, 'all_rooms': len(rooms), 'free_rooms': len(free_rooms)})
+        return render(request, "HotelOccupancy.html")
     return render(request, "Home.html")

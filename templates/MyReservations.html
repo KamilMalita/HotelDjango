@@ -14,7 +14,25 @@
     <meta charset="UTF-8">
     <title>Reservations</title>
 </head>
-<body onload="sortdate()">
+<body onload="onload()">
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h1 class="mt-2" style="color: whitesmoke">Reservations</h1>
+            <hr class="mt-0 mb-4">
+
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center" style="margin-bottom: 15pt">
+    <button class="btn btn-light" id="past_button" onclick="past_reservations()">Past reservations
+    </button>
+    <button class="btn btn-light" onclick="all_reservations()" style="margin-left: 5pt;margin-right: 5pt"
+            id="all_button">All reservations
+    </button>
+    <button class="btn btn-light" id="future_button" onclick="future_reservations()">Future reservations
+    </button>
+</div>
 <div class="col-md-11">
     <table class="table" style="text-align: center">
         <thead class="thead-light" style="color: black">
@@ -47,7 +65,6 @@
         </tbody>
     </table>
 </div>
-<button onclick="reverse_display()">Siema</button>
 <script>
     function sort_index() {
         var index = 1;
@@ -81,16 +98,55 @@
         sort_index()
     }
 
-    function sortdate(value='growing') {
-        // new onload body
+    function past_reservations() {
+        var butt1 = document.getElementById('past_button').disabled = 'true';
+        var butt2 = document.getElementById('all_button').disabled = '';
+        var butt3 = document.getElementById('future_button').disabled = '';
+        sortdate();
+        reverse_display();
+    }
+
+    function future_reservations() {
+        var butt1 = document.getElementById('past_button').disabled = '';
+        var butt2 = document.getElementById('all_button').disabled = '';
+        var butt3 = document.getElementById('future_button').disabled = 'true';
+        sortdate();
+    }
+
+    function all_reservations() {
+        var butt1 = document.getElementById('past_button').disabled = '';
+        var butt2 = document.getElementById('all_button').disabled = 'true';
+        var butt3 = document.getElementById('future_button').disabled = '';
+        sortdate('low');
+        sort_index();
+    }
+
+    function sortdate(value = 'growing') {
         var Now = new Date();
         var intFormatDate = Now.toISOString().slice(0, 10).replace(/-/g, "");
         var cl_reser = document.getElementsByClassName('class_reservation');
         for (var i = 0; i < cl_reser.length; i++) {
-            if(cl_reser[i].getElementsByClassName('class_end')[0].innerHTML.replace(/-/g, "")<=intFormatDate)
-            cl_reser[i].style.display='none';
+            if (cl_reser[i].getElementsByClassName('class_end')[0].innerHTML.replace(/-/g, "") < intFormatDate && value === 'growing') {
+                cl_reser[i].style.display = 'none';
+            } else if (cl_reser[i].getElementsByClassName('class_end')[0].innerHTML.replace(/-/g, "") === intFormatDate) {
+                cl_reser[i].style.backgroundColor = 'rgba(255,255,0,0.6)';
+                cl_reser[i].style.display = '';
+            } else if (cl_reser[i].getElementsByClassName('class_start')[0].innerHTML.replace(/-/g, "") === intFormatDate) {
+                cl_reser[i].style.backgroundColor = 'rgba(0, 255, 0,0.6)';
+                cl_reser[i].style.display = '';
+            } else if (cl_reser[i].getElementsByClassName('class_end')[0].innerHTML.replace(/-/g, "") > intFormatDate &&cl_reser[i].getElementsByClassName('class_start')[0].innerHTML.replace(/-/g, "") < intFormatDate) {
+                cl_reser[i].style.backgroundColor = 'rgba(255, 80, 80,0.6)';
+                cl_reser[i].style.display = '';
+            } else {
+                cl_reser[i].style.display = '';
+            }
         }
-        sort_index()
+        sort_index();
+    }
+
+    function onload() {
+        sortdate();
+        var butt3 = document.getElementById('future_button').disabled = 'true';
     }
 </script>
 </body>
