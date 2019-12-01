@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+{% include 'navbar.html' %}
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
+        }
+
+        .form-group {
+            padding-bottom: 10pt;
+        }
+
+        .form_room {
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+
+        }
+
+        .row {
+            padding-left: 20pt;
+        }
+
+        .col-md-8 {
+            border-radius: 12pt;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .col-md-4 {
+
+        }
+
+        h1 {
+            color: whitesmoke;
+        }
+    </style>
+    <title>Edit Type</title>
+</head>
+<body onload="sort_index()">
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h1 class="mt-2" style="color: rgb(54,151,212)">Edit Type</h1>
+            <hr class="mt-0 mb-4">
+
+        </div>
+    </div>
+</div>
+
+{% block naglowek %}
+{% endblock %}
+
+<div class="row col-md-12">
+    <div class="col-md-7" style="margin-left: auto;margin-right: auto">
+        <form class="form_room">
+            {% csrf_token %}
+        {% if err %}
+                    <p class="text-danger">{{ err }}</p>
+                {% endif %}
+            <div class="form-group">
+                <label style="color: black" for="name">Name of type room</label>
+                <input type="text" class="form-control" id="name" aria-describedby="emailHelp"
+                       placeholder="Enter name of type room" name="name" value="{{ TypeEdit.name }}">
+                {% if msg %}
+                    <p class="text-danger">{{ msg }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="capacityAdults">Number of adults in room</label>
+                <input type="number" class="form-control" id="capacityAdults" aria-describedby="emailHelp"
+                       placeholder="Enter number of adults in room" name="capacityAdults" min="0" value="{{ TypeEdit.capacityAdults }}">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="capacityKids">Number of kids in room</label>
+                <input type="number" class="form-control" id="capacityKids" aria-describedby="emailHelp"
+                       placeholder="Enter number of kids in room" name="capacityKids" min="0" value="{{ TypeEdit.capacityKids }}">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="multiplier">Multiplier of type</label>
+                <input type="number" step="0.01" class="form-control" id="multiplier" placeholder="Enter multiplier"
+                       name="multiplier" min="1.0" value="{{ TypeEdit.multiplier }}">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="marriage">Marriage room:</label>
+                <input type="checkbox" id="marriage_id"
+                       name="marriage_id" onclick="changeMarriage()">
+                <input type="hidden" class="form-control" id="marriage"
+                       name="marriage" value="{{ TypeEdit.marriage }}">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="apartment">Apartment Room:</label>
+                <input type="checkbox" id="apartment_id"
+                       name="apartment_id" onclick="changeMarriage()">
+                <input type="hidden" class="form-control" id="apartment"
+                       name="apartment" value="{{ TypeEdit.apartment }}">
+            </div>
+            {#            <div class="form-group">#}
+            {#                <label style="color: black" for="description">Short description of room</label>#}
+            {#                <textarea type="text" class="form-control" id="description" placeholder="Enter description of room"#}
+            {#                          name="description"></textarea>#}
+            {#            </div>#}
+            <button type="submit" class="btn btn-light" formmethod="post" formaction="/room/edittype/{{ TypeEdit.id }}/">Update type</button>
+        </form>
+    </div>
+
+</div>
+<script>
+    function sort_index() {
+        // Get the checkbox
+        var checkBox = document.getElementById("marriage_id");
+        // Get the output text
+        var min = document.getElementById("marriage");
+        if(min.value==="False"){
+            min.value="off";
+        }
+        else{
+            min.value="on";
+            checkBox.checked=true;
+        }
+        var checkBox = document.getElementById("apartment_id");
+        // Get the output text
+        var min = document.getElementById("apartment");
+        if(min.value==="False"){
+            min.value="off";
+        }
+        else{
+            min.value="on";
+            checkBox.checked=true;
+        }
+    }
+
+    function changeMarriage() {
+        // Get the checkbox
+        var checkBox = document.getElementById("marriage_id");
+        // Get the output text
+        var min = document.getElementById("marriage");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true) {
+            min.value = "on";
+        } else {
+            min.value = "off";
+        }
+        var checkBox = document.getElementById("apartment_id");
+        // Get the output text
+        var min = document.getElementById("apartment");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true) {
+            min.value = "on";
+        } else {
+            min.value = "off";
+        }
+    }
+</script>
+</body>
+</html>

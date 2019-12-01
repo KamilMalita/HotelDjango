@@ -1,30 +1,35 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import Room, Reservation
-from .forms import RoomForm
+from .models import Room, Reservation, RoomType
+from .forms import RoomForm, TypeForm
 import datetime
 
 
 def addroom(request):
+    print(request.POST)
     if request.user.is_staff or request.user.is_superuser:
         if request.method == 'POST' and request.POST['number'] is not '':
             same_room = Room.objects.filter(number=request.POST['number'])
             if not len(same_room):
                 form = RoomForm(request.POST)
                 if form.is_valid():
+                    type_id = RoomType.objects.filter(name=request.POST['type'])
                     new_room = Room(price=request.POST['price'], description=request.POST['description'],
-                                    name=request.POST['name'], number=request.POST['number'])
+                                    name=request.POST['name'], number=request.POST['number'],
+                                    type_id=type_id[0].id)
                     new_room.save()
                     return HttpResponseRedirect('/room/view')
                 else:
                     rooms = Room.objects.all().order_by('number')
+                    types = RoomType.objects.all().order_by('name')
                     return render(request, "ManageRoom.html",
-                                  {'err': f'{form.errors}', 'all_rooms': rooms})
+                                  {'err': f'{form.errors}', 'all_rooms': rooms, 'all_types': types})
             else:
                 rooms = Room.objects.all().order_by('number')
+                types = RoomType.objects.all().order_by('name')
                 return render(request, "ManageRoom.html",
-                              {'msg': 'The room number is already in use.', 'all_rooms': rooms})
+                              {'msg': 'The room number is already in use.', 'all_rooms': rooms, 'all_types': types})
         else:
             print(str(request.POST))
             return redirect('/room/view')
@@ -34,7 +39,9 @@ def addroom(request):
 
 def viewRoom(request):
     rooms = Room.objects.all().order_by('number')
-    return render(request, "ManageRoom.html", {'all_rooms': rooms})
+    types = RoomType.objects.all().order_by('name')
+    print(types)
+    return render(request, "ManageRoom.html", {'all_rooms': rooms, 'all_types': types})
 
 
 def deleteroom(request, room_id):
@@ -44,6 +51,57 @@ def deleteroom(request, room_id):
                 room_delete = Room.objects.get(id=room_id)
                 room_delete.delete()
     return HttpResponseRedirect('/room/view/')
+
+
+def editroomquery(request, room_id):
+    if request.user.is_superuser or request.user.is_staff:
+        if request.method == 'GET':
+            if len(Room.objects.filter(id=room_id)):
+                types = RoomType.objects.all().order_by('name')
+                return render(request, "EditRoom.html", {'RoomEdit': Room.objects.get(id=room_id), 'all_types': types})
+        elif request.method == "POST":
+            print(request.POST)
+            if len(Room.objects.filter(id=room_id)):
+                type_id = RoomType.objects.filter(name=request.POST['type'])
+                room_edit = Room.objects.filter(id=room_id).update(name=request.POST['name'],
+                                                                   price=request.POST['price'],
+                                                                   number=request.POST['number'],
+                                                                   description=request.POST['description'],
+                                                                   type_id=type_id[0].id)
+    return HttpResponseRedirect('/room/view/')
+
+
+def edittypequery(request, type_id):
+    updatemsg = ''
+    if request.user.is_superuser or request.user.is_staff:
+        if request.method == 'GET':
+            if len(RoomType.objects.filter(id=type_id)):
+                return render(request, "EditType.html", {'TypeEdit': RoomType.objects.get(id=type_id)})
+        elif request.method == "POST":
+            print(request.POST)
+            if len(RoomType.objects.filter(id=type_id)):
+                form = TypeForm(request.POST)
+                if form.is_valid():
+                    apartment = 'False'
+                    marriage = 'False'
+                    if request.POST['apartment'] == 'on':
+                        apartment = 'True'
+                    if request.POST['marriage'] == 'on':
+                        marriage = 'True'
+                    old_multiplier = RoomType.objects.get(id=type_id).multiplier
+                    type_edit = RoomType.objects.filter(id=type_id).update(name=request.POST['name'], marriage=marriage,
+                                        multiplier=request.POST['multiplier'], apartment=apartment,
+                                        capacityKids=request.POST['capacityKids'],
+                                        capacityAdults=request.POST['capacityAdults'])
+                    rooms = Room.objects.filter(type_id=type_id)
+                    for room in rooms:
+                        Room.objects.filter(id=room.id).update(price=int(room.price/old_multiplier*float(request.POST['multiplier'])))
+                    updatemsg = f'Successfully update {request.POST["name"]} room.'
+                    types = RoomType.objects.all().order_by('name')
+                    return render(request, 'TypesRoom.html', {'updatemsg': updatemsg, 'all_rooms': types})
+                else:
+                    return render(request, "EditType.html", {'TypeEdit': RoomType.objects.get(id=type_id), 'err': form.errors})
+    return HttpResponseRedirect('/room/types/')
 
 
 def reservation(request):
@@ -110,7 +168,8 @@ def my_reservations(request):
         if request.user.is_staff or request.user.is_superuser:
             all_reservations = Reservation.objects.all().order_by('start_reservation')
             return render(request, "MyReservations.html", {'all_reservations': all_reservations})
-        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by('start_reservation')
+        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by(
+            'start_reservation')
         return render(request, "MyReservations.html", {'all_reservations': all_reservations})
     return render(request, "Home.html")
 
@@ -131,7 +190,47 @@ def hotel_occupancy(request):
                 tab_exclude.append(liss.id_room.number)
             rooms = Room.objects.all()
             free_rooms = rooms.exclude(number__in=tab_exclude)
-            busy_room = int(len(rooms))-int(len(free_rooms))
-            return render(request, "HotelOccupancy.html", {'busy_rooms': busy_room, 'all_rooms': len(rooms), 'free_rooms': len(free_rooms)})
+            busy_room = int(len(rooms)) - int(len(free_rooms))
+            return render(request, "HotelOccupancy.html",
+                          {'busy_rooms': busy_room, 'all_rooms': len(rooms), 'free_rooms': len(free_rooms)})
         return render(request, "HotelOccupancy.html")
     return render(request, "Home.html")
+
+
+def types_room(request):
+    if request.user.is_staff or request.user.is_superuser:
+        if request.method == 'POST' and request.POST['name'] is not '':
+            same_room = RoomType.objects.filter(name=request.POST['name'])
+            if not len(same_room):
+                form = TypeForm(request.POST)
+                if form.is_valid():
+                    apartment = 'False'
+                    marriage = 'False'
+                    if request.POST['apartment'] == 'on':
+                        apartment = 'True'
+                    if request.POST['marriage'] == 'on':
+                        marriage = 'True'
+                    new_type = RoomType(name=request.POST['name'], marriage=marriage,
+                                        multiplier=request.POST['multiplier'], apartment=apartment,
+                                        capacityKids=request.POST['capacityKids'],
+                                        capacityAdults=request.POST['capacityAdults'])
+                    new_type.save()
+                types = RoomType.objects.all().order_by('name')
+                return render(request, "TypesRoom.html",
+                              {'err': f'{form.errors}', 'all_rooms': types})
+            else:
+                types = RoomType.objects.all().order_by('name')
+                return render(request, "TypesRoom.html",
+                              {'msg': 'The name of type is already in use', 'all_rooms': types})
+        types = RoomType.objects.all().order_by('name')
+        return render(request, "TypesRoom.html", {'all_rooms': types})
+    return redirect('/')
+
+
+def deletetype(request, type_id):
+    if request.user.is_superuser or request.user.is_staff:
+        if request.method == 'POST':
+            if len(RoomType.objects.filter(id=type_id)):
+                room_delete = RoomType.objects.get(id=type_id)
+                room_delete.delete()
+    return HttpResponseRedirect('/room/types/')

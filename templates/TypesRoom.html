@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+{% include 'navbar.html' %}
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
+        }
+
+        .form-group {
+            padding-bottom: 10pt;
+        }
+
+        .form_room {
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+
+        }
+
+        .row {
+            padding-left: 20pt;
+        }
+
+        .col-md-8 {
+            border-radius: 12pt;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .col-md-4 {
+
+        }
+
+        h1 {
+            color: whitesmoke;
+        }
+    </style>
+    <title>Edit Type</title>
+</head>
+<body onload="sort_index()">
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h1 class="mt-2" style="color: rgb(54,151,212)">Types rooms</h1>
+            <hr class="mt-0 mb-4">
+
+        </div>
+    </div>
+</div>
+
+{% block naglowek %}
+{% endblock %}
+
+<div class="row col-md-12">
+    <div class="col-md-4">
+        <form class="form_room">
+            {% csrf_token %}
+            <div class="form-group">
+                <label style="color: black" for="name">Name of type room</label>
+                <input type="text" class="form-control" id="name" aria-describedby="emailHelp"
+                       placeholder="Enter name of type room" name="name">
+                {% if msg %}
+                    <p class="text-danger">{{ msg }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="capacityAdults">Number of adults in room</label>
+                <input type="number" class="form-control" id="capacityAdults" aria-describedby="emailHelp"
+                       placeholder="Enter number of adults in room" name="capacityAdults" min="0">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="capacityKids">Number of kids in room</label>
+                <input type="number" class="form-control" id="capacityKids" aria-describedby="emailHelp"
+                       placeholder="Enter number of kids in room" name="capacityKids" min="0">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="multiplier">Multiplier of type</label>
+                <input type="number" step="0.01" class="form-control" id="multiplier" placeholder="Enter multiplier"
+                       name="multiplier" min="1.0">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="marriage">Marriage room:</label>
+                <input type="checkbox" id="marriage_id"
+                       name="marriage_id" onclick="changeMarriage()">
+                <input type="hidden" class="form-control" id="marriage"
+                       name="marriage">
+            </div>
+            <div class="form-group">
+                <label style="color: black" for="apartment">Apartment Room:</label>
+                <input type="checkbox" id="apartment_id"
+                       name="apartment_id" onclick="changeMarriage()">
+                <input type="hidden" class="form-control" id="apartment"
+                       name="apartment">
+            </div>
+            {#            <div class="form-group">#}
+            {#                <label style="color: black" for="description">Short description of room</label>#}
+            {#                <textarea type="text" class="form-control" id="description" placeholder="Enter description of room"#}
+            {#                          name="description"></textarea>#}
+            {#            </div>#}
+            {% if err %}
+                <p class="text-danger">{{ err }}</p>
+            {% endif %}
+            <button type="submit" class="btn btn-light" formmethod="post" formaction="/room/types/">Add type</button>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <table class="table">
+            <thead class="thead-light" style="color: black">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Capacity Adults</th>
+                <th scope="col">Capacity Kids</th>
+                <th scope="col">Marriage</th>
+                <th scope="col">Apartment</th>
+                <th scope="col">Multiplier</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for room in all_rooms %}
+                <tr>
+                    <th scope="row" class="lp"></th>
+                    <td style="color: black;">{{ room.name }}</td>
+                    <td style="color: black;">{{ room.capacityAdults }}</td>
+                    <td style="color: black;">{{ room.capacityKids }}</td>
+                    <td style="color: black;">{{ room.marriage }}</td>
+                    <td style="color: black;">{{ room.apartment }}</td>
+                    <td style="color: black;">{{ room.multiplier }}</td>
+                    <form style="display: inline;">{% csrf_token %}
+                        <td>
+
+                            <button type="submit" class="btn btn-light" formmethod="post"
+                                    formaction="/room/deletetype/{{ room.id }}/">Delete
+                            </button><br>
+                            <button type="submit" class="btn btn-light" formmethod="get"
+                                    formaction="/room/edittype/{{ room.id }}/">Edit
+                            </button>
+                        </td>
+                    </form>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script>
+    function sort_index() {
+        var index = 1;
+        var lp = document.getElementsByClassName('lp');
+        for (var i = 0; i < lp.length; i++) {
+            lp[i].innerHTML = index;
+            index++;
+        }
+        changeMarriage()
+        if("{{ updatemsg }}"!=""){
+            alert("{{ updatemsg }}");
+        }
+    }
+
+    function changeMarriage() {
+        // Get the checkbox
+        var checkBox = document.getElementById("marriage_id");
+        // Get the output text
+        var min = document.getElementById("marriage");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true) {
+            min.value = "on";
+        } else {
+            min.value = "off";
+        }
+        var checkBox = document.getElementById("apartment_id");
+        // Get the output text
+        var min = document.getElementById("apartment");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked == true) {
+            min.value = "on";
+        } else {
+            min.value = "off";
+        }
+    }
+</script>
+</body>
+</html>

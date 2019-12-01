@@ -2,11 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class RoomType(models.Model):
+    name = models.TextField(max_length=100)
+    capacityAdults = models.IntegerField()
+    capacityKids = models.IntegerField()
+    marriage = models.BooleanField(default=False)
+    apartment = models.BooleanField(default=False)
+    multiplier = models.FloatField()
+
+
 class Room(models.Model):
     number = models.IntegerField()
     name = models.TextField()
     price = models.IntegerField()
     description = models.TextField()
+    type = models.ForeignKey(RoomType, on_delete=models.CASCADE)
 
 
 class Reservation(models.Model):

@@ -5,6 +5,8 @@
     <style>
         body {
             font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
         }
 
         .form-group {
@@ -41,7 +43,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div>
-            <h1 class="mt-2">Manage rooms</h1>
+            <h1 class="mt-2" style="color: rgb(54,151,212)">Manage rooms</h1>
             <hr class="mt-0 mb-4">
 
         </div>
@@ -66,14 +68,31 @@
             <div class="form-group">
                 <label style="color: black" for="number">Number of room</label>
                 <input type="number" class="form-control" id="number" aria-describedby="emailHelp"
-                       placeholder="Enter room number as number" name="number">
+                       placeholder="Enter room number as number" name="number" min="0">
                 {% if msg %}
                     <p class="text-danger">{{ msg }}</p>
                 {% endif %}
             </div>
             <div class="form-group">
-                <label style="color: black" for="price">Price for night in room</label>
-                <input type="number" class="form-control" id="price" placeholder="Enter price as number" name="price">
+                <label for="type">Type Room</label>
+                <select class="form-control" onchange="onChangeType()" id="type" name="type">
+                    {% for type in all_types %}
+                        <option id="{{ type.id }}">{{ type.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row form-group" style="margin-left: auto;margin-right: auto">
+                <label style="color: black" class="col-md-12" for="price">Default price for night in room</label>
+
+                <input type="number" class="form-control col-sm-6" id="defaultprice" placeholder="Enter price as number"
+                       name="defaultprice" min="1" value="50" onchange="onChangeType()">*
+                <input disabled class="form-control col-sm-5" id="multiplier" placeholder=""
+                       name="multiplier">
+                <div class="col-md-12">
+                    <label style="color: black" class="row justify-content-center" for="price">Total Price for night in room:</label>
+                    <input readonly class="form-control col-sm-4" id="price" placeholder="Enter price as number"
+                           name="price" style="margin-right: auto;margin-left: auto">
+                </div>
             </div>
             <div class="form-group">
                 <label style="color: black" for="description">Short description of room</label>
@@ -92,6 +111,7 @@
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col">Price</th>
+                <th scope="col">Type</th>
                 <th scope="col">Actions</th>
             </tr>
             </thead>
@@ -103,10 +123,14 @@
                     <td style="color: black;">{{ room.name }}</td>
                     <td style="color: black;">{{ room.description }}</td>
                     <td style="color: black;">{{ room.price }}</td>
+                    <td style="color: black;">{{ room.type.name }}</td>
                     <form style="display: inline;">{% csrf_token %}
                         <td>
                             <button type="submit" class="btn btn-light" formmethod="post"
                                     formaction="/room/delete/{{ room.id }}/">Delete
+                            </button>
+                            <button type="submit" class="btn btn-light" formmethod="get"
+                                    formaction="/room/edit/{{ room.id }}/">Edit
                             </button>
                         </td>
                     </form>
@@ -121,10 +145,35 @@
     function sort_index() {
         var index = 1;
         var lp = document.getElementsByClassName('lp');
-        for(var i=0; i<lp.length; i++){
-            lp[i].innerHTML=index;
+        for (var i = 0; i < lp.length; i++) {
+            lp[i].innerHTML = index;
             index++;
         }
+        var arr = [];
+        {% for type in all_types %}
+            arr.push({{ type.multiplier }});
+        {% endfor %}
+        document.getElementById("multiplier").value = arr[0];
+        document.getElementById("price").value = parseInt(document.getElementById("multiplier").value * document.getElementById("defaultprice").value);
+
+    }
+    function onChangeType() {
+        console.log(document.getElementById("type").value);
+        arr = [];
+        arr1 = [];
+        {% for type in all_types %}
+            arr.push("{{ type.name }}");
+            arr1.push({{ type.multiplier }});
+        {% endfor %}
+    for(var i=0; i<arr.length;i++){
+        if(arr[i]===document.getElementById("type").value){
+            document.getElementById("multiplier").value = arr1[i];
+            document.getElementById("price").value = parseInt(arr1[i] * document.getElementById("defaultprice").value);
+        }
+    }
+    {#if({{ type.name }}==document.getElementById("type").value){#}
+    {#            console.log({{ type.name }})#}
+    {#    }#}
     }
 </script>
 </body>

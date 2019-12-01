@@ -1,100 +1,116 @@
 {% block naglowek %}
-    <style>
-        body {
-            font-family: "Segoe UI";
-            background: rgb(44, 255, 210);
-            background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;
-        }
+    <div>
+        <style>
+            body {
+                font-family: "Segoe UI";
+                background: rgb(237, 238, 239);
+            {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
+            }
 
-        .navbar {
-            font-family: "Segoe UI";
-            font-size: large;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
+            .navbar {
+                font-family: "Segoe UI";
+                font-size: large;
+            }
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" style="font-size: large" href="/">Pastel Hotel</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            a:hover {
+                transition-duration: 0.4s;
+                background: linear-gradient(rgb(54,151,212),rgb(54,120,212)); /* Green */
+                background: rgb(51,140,196);
+            }
+        </style>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+              crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li style="border-left:2px solid gray;height:auto"></li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li style="border-left:1px solid gray;height:auto"></li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/room/search">Reservation</a>
-                </li>
-                <li style="border-left:1px solid gray;height:auto"></li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/room">Offer</a>
-                </li>
+        <nav class="navbar navbar-expand-lg" style="background-color: rgb(54,151,212);color: white">
+            <a class="navbar-brand" style="font-size: large; color: white" href="/">Pastel Hotel</a>
+            <button style="color: white;background-color: teal" class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
 
-                {% if user.is_superuser or user.is_staff %}
-                    <li style="border-left:1px solid gray;height:auto"></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Administration
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/room/add">Manage Rooms</a>
-                            <a class="dropdown-item" href="/room/reservations">Manage Reservations</a>
-                            <a class="dropdown-item" href="/room/occupancy">Hotel Occupancy</a>
-                            {#                                        <a class="dropdown-item" href="#">Another action</a>#}
-                            {#                                        <div class="dropdown-divider"></div>#}
-                            {#                                        <a class="dropdown-item" href="#">Something else here</a>#}
-                        </div>
+                <span style="color: white" class="navbar-toggler-icon">三</span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li style="border-left:2px solid gray;height:auto"></li>
+                    <li class="nav-item">
+                        <a style="color: white" class="nav-link" href="/">Home <span
+                                class="sr-only">(current)</span></a>
                     </li>
-                {% endif %}
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-            <ul class="navbar-nav mr-right">
-                {% if user.is_authenticated and not user.is_superuser and not user.is_staff %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Profile
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/room/reservations">My Reservations</a>
+                    <li style="border-left:1px solid gray;height:auto"></li>
+                    <li class="nav-item">
+                        <a style="color: white" class="nav-link" href="/room/search">Reservation</a>
+                    </li>
+                    <li style="border-left:1px solid gray;height:auto"></li>
+                    <li class="nav-item">
+                        <a style="color: white" class="nav-link" href="/room">Offer</a>
+                    </li>
+
+                    {% if user.is_superuser or user.is_staff %}
+                        <li style="border-left:1px solid gray;height:auto"></li>
+                        <li class="nav-item dropdown">
+                            <a style="color: white" class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                               role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Administration
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/room/add">Manage Rooms</a>
+                                <a class="dropdown-item" href="/room/types">Types Room</a>
+                                <a class="dropdown-item" href="/room/reservations">Manage Reservations</a>
+                                <a class="dropdown-item" href="/room/occupancy">Hotel Occupancy</a>
+                                {#                                        <a class="dropdown-item" href="#">Another action</a>#}
+                                {#                                        <div class="dropdown-divider"></div>#}
+                                {#                                        <a class="dropdown-item" href="#">Something else here</a>#}
                             </div>
-                    </li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/account/logout">Logout</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/account/register">Register</a>
-                    </li>
-                    <li style="border-left:1px solid gray;height:auto"></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/account/login">Login</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+                        </li>
+                    {% endif %}
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-secondary my-2 my-sm-0 active" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav mr-right">
+                    {% if user.is_authenticated and not user.is_superuser and not user.is_staff %}
+                        <li class="nav-item dropdown">
+                            <a style="color: white" class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                               role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Profile
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a style="color: white" class="dropdown-item" href="/room/reservations">My
+                                    Reservations</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a style="color: white" class="nav-link" href="/account/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a style="color: white" class="nav-link" href="/account/register">Register</a>
+                        </li>
+                        <li style="border-left:1px solid gray;height:auto"></li>
+                        <li class="nav-item">
+                            <a style="color: white" class="nav-link" href="/account/login">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </div>
 {% endblock %}

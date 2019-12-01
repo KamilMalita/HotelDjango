@@ -3,20 +3,23 @@
 {% include 'navbar.html' %}
 <head>
     <title>Title</title>
-{% csrf_token %}
-<style>
-    body{
-        font-family: "Segoe UI";
-    }
-    h1{
-        border-radius: 25pt;
-        background-color: rgba(255, 255, 255, 0.6);
-        padding: 10pt 10pt 10pt;
-        width: 600pt;
-        align: center;
-        position: center;
-    }
-</style>
+    {% csrf_token %}
+    <style>
+        body {
+            font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
+        }
+
+        h1 {
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 10pt 10pt 10pt;
+            width: 600pt;
+            align: center;
+            position: center;
+        }
+    </style>
 </head>
 <body>
 {% block navbar %}

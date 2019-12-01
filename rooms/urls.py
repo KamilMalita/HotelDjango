@@ -22,9 +22,13 @@ urlpatterns = [
     path('view/', room_views.viewRoom),
     path('add/', room_views.addroom),
     path('delete/<int:room_id>/', room_views.deleteroom),
+    path('edit/<int:room_id>/', room_views.editroomquery),
     path('search/', room_views.search),
     path('search/reservation/', room_views.reservation),
     path('search/reservation/room/', room_views.reservation_create),
     path('reservations/', room_views.my_reservations),
     path('occupancy/', room_views.hotel_occupancy),
+    path('types/', room_views.types_room),
+    path('edittype/<int:type_id>/', room_views.edittypequery),
+    path('deletetype/<int:type_id>/', room_views.deletetype),
 ]
