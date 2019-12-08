@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'navbar.html' %}
+<head>
+    <title>My Profile</title>
+    {% csrf_token %}
+    <style>
+        body {
+            font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        }
+
+        .profile_form {
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+
+        }
+
+        .password_form {
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+
+        }
+    </style>
+</head>
+<body>
+{% block navbar %}
+{% endblock %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h1 class="mt-2" style="color: rgb(54,151,212)">Profile</h1>
+            <hr class="mt-0 mb-4">
+
+        </div>
+    </div>
+</div>
+<div class="col-md-7" style="margin-left: auto;margin-right: auto">
+    <form id="profile_form" class="profile_form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username*</label>
+            <input readonly type="username" class="form-control" id="username" aria-describedby="emailHelp"
+                   placeholder="Enter username" name="username" value="{{ User.username }}">
+        </div>
+        <div class="form-group">
+            <label for="email">Email address*</label>
+            <input readonly type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                   placeholder="Enter email" name="email" value="{{ User.email }}">
+            {#            <small id="emailHelp" style="color: black" class="form-text">We'll never share your email with anyone#}
+            {#                else.</small>#}
+            {% if error_email %}
+                <p class="text-danger">{{ error_email }}</p>
+            {% endif %}
+        </div>
+        <div class="form-row">
+            <div class="col-md-6">
+                <label for="name">Your name</label>
+                <input readonly type="text" class="form-control" id="name" aria-describedby="nameHelp"
+                       name="name" value="{{ User.first_name }}">
+            </div>
+            <div class="col-md-6">
+                <label for="surname">Your surname</label>
+                <input readonly type="text" class="form-control" id="surname" aria-describedby="nameHelp"
+                       name="surname" value="{{ User.last_name }}">
+            </div>
+        </div>
+        <button type="reset" onclick="SetFields()" id="button_edit" class="btn btn-light">Edit Profile</button>
+        <button type="reset" hidden onclick="SetFields()" id="button_back" class="btn btn-light">Back</button>
+        <button type="reset" onclick="ChangePasswordForm()" id="button_password" class="btn btn-light">Edit
+            password
+        </button>
+        <button type="submit" hidden class="btn btn-light" formmethod="post" id="button_save" formaction="#">Submit
+        </button>
+    </form>
+    <form id="password_form" class="password_form" hidden>
+        {% csrf_token %}
+
+        <label hidden for="username">Password*</label>
+        <input readonly hidden type="username" class="form-control"
+               placeholder="Enter password" name="username" value="{{ User.username }}">
+        <div class="form-group">
+            <label for="old_password">Old password*</label>
+            <input type="password" class="form-control" id="old_password"
+                   placeholder="Enter old password" name="old_password">
+            {% if error_old_pass %}
+                <p class="text-danger">{{ error_old_pass }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="password">New password*</label>
+            <input type="password" class="form-control" id="password"
+                   placeholder="Enter password" name="password">
+            {% if error_pass %}
+                <p class="text-danger">{{ error_pass }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="password2">Confirm new password*</label>
+            <input type="password" class="form-control" id="password2" aria-describedby="emailHelp"
+                   placeholder="Confirm password" name="password2">
+            <small id="passwordHelp" style="color: black" class="form-text">Password can not be shorter than 8
+                characters</small>
+        </div>
+        <button type="reset" class="btn btn-light" onclick="ChangePasswordForm()">Back
+        </button>
+        <button type="submit" class="btn btn-light" formmethod="post" id="button_save_password"
+                formaction="/account/profile/password/">Submit
+        </button>
+    </form>
+</div>
+<script>
+    function SetFields() {
+        document.getElementById("name").readOnly = !document.getElementById("name").readOnly;
+        document.getElementById("surname").readOnly = !document.getElementById("surname").readOnly;
+        document.getElementById("email").readOnly = !document.getElementById("email").readOnly;
+        document.getElementById("button_save").hidden = !document.getElementById("button_save").hidden;
+        document.getElementById("button_edit").hidden = !document.getElementById("button_edit").hidden;
+        document.getElementById("button_password").hidden = !document.getElementById("button_password").hidden;
+        document.getElementById("button_back").hidden = !document.getElementById("button_back").hidden;
+    }
+
+    function ChangePasswordForm() {
+        document.getElementById('password_form').hidden = !document.getElementById('password_form').hidden;
+        document.getElementById('profile_form').hidden = !document.getElementById('profile_form').hidden;
+    }
+
+</script>
+</body>
+</html>

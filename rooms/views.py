@@ -106,6 +106,7 @@ def edittypequery(request, type_id):
 
 def reservation(request):
     if request.user.is_authenticated and request.method == 'POST':
+        print(request.POST)
         date_all = request.POST['customdate']
         date_start = str(date_all).split(':')[0]
         date_end = str(date_all).split(':')[1]
@@ -117,18 +118,22 @@ def reservation(request):
         try:
             x = request.POST['myCheck']
             rooms = Room.objects.all().exclude(number__in=tab_exclude)
+            rooms = rooms.filter(type__capacityAdults__gte=request.POST['number']).filter(
+                type__capacityKids__gte=request.POST['numberKids'])
         except:
             if request.POST['price_min'] > request.POST['price_max']:
                 return render(request, "SearchRooms.html", {'price_err': "Minimum price can not be lower than maximum"})
             rooms = Room.objects.all().filter(price__gte=request.POST['price_min']).filter(
                 price__lte=request.POST['price_max']).exclude(number__in=tab_exclude)
+            rooms = rooms.filter(type__capacityAdults__gte=request.POST['number']).filter(
+                type__capacityKids__gte=request.POST['numberKids'])
         print(len(rooms))
         days = int(date_end.replace('-', '')) - int(date_start.replace('-', ''))
         if len(rooms):
             return render(request, "Reservation.html",
                           {'length': days, 'free_rooms': rooms, 'start_date': date_start, 'end_date': date_end})
         else:
-            return render(request, "SearchRooms.html", {'err': "No free rooms in this date"})
+            return render(request, "SearchRooms.html", {'err': "No rooms for you in this date"})
     return redirect('/')
 
 

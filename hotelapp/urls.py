@@ -26,4 +26,6 @@ urlpatterns = [
     path('account/register/', register_request),
     path('account/login/', login_request),
     path('account/logout/', logout_request),
+    path('account/profile/', profile),
+    path('account/profile/password/', changepass),
 ]
