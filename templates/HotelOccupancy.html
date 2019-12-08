@@ -9,17 +9,25 @@
     <meta charset="UTF-8">
     <title>Occupancy</title>
     <style>
-                .form_room {
+        .form_room {
             border-radius: 25pt;
             background-color: rgba(255, 255, 255, 0.6);
             padding: 15pt 15pt 20pt;
 
         }
-          body {
-                font-family: "Segoe UI";
-                background: rgb(237, 238, 239);
-            {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
-            }
+
+        body {
+            font-family: "Segoe UI";
+            background: rgb(237, 238, 239);
+        {#background: linear-gradient(0deg, rgba(44, 255, 210, 0.92) 0%, rgba(69, 165, 195, 0.92) 55%) no-repeat fixed;#}
+        }
+
+        .item {
+            margin-top: 10pt;
+            border-radius: 25pt;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 15pt 15pt 20pt;
+        }
     </style>
 </head>
 <body>
@@ -31,7 +39,7 @@
             <form class="form_room">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label style="color: black" for="occupancy_date">Time of occupancy:</label>
+                    <label style="color: black" for="occupancy_date">Range of occupancy:</label>
                     <input type="hidden" name="occupancy_date" id="occupancy_date">
                     <div class="form-control" id="reportrange"
                          style="background: #fff; border-radius: 3pt; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
@@ -48,7 +56,34 @@
     </div>
 </div>
 {% if all_rooms %}
-    Wszystkie: {{ all_rooms }}, Zajęte: {{ busy_rooms }}, Wolne: {{ free_rooms }}
+    <h2 class="mt-2" style="color: rgb(54,151,212);text-align: center">General info</h2>
+            <hr class="mt-0 mb-4">
+    <div class="col-sm-6 item" style="margin-left: auto;margin-right: auto;text-align: center; margin-bottom: 10pt">
+    <h4>All rooms: {{ all_rooms }}, busy: {{ busy_rooms }}, free: {{ free_rooms }}</h4>
+    </div>
+    <hr class="mt-0 mb-4">
+{% endif %}
+{% if lista %}
+    <h2 class="mt-2" style="color: rgb(54,151,212);text-align: center">Specific types</h2>
+            <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="row col-sm-10" style="margin-right: auto;margin-left: auto">
+            {% for element in lista %}
+                <div class="col-sm-6">
+                    <div class="item">
+                        <h3> Type of room: {{ element.type }}</h3>
+                        <ul>
+                            <li>All rooms: {{ element.all }}</li>
+                            <li>Free rooms: {{ element.free }}</li>
+                            <li>Busy rooms: {{ element.busy }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+            {% endfor %}
+        </div>
+    </div>
+    <hr class="mt-0 mb-4">
 {% endif %}
 <script>
     $(function () {

@@ -25,7 +25,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="onLoad()">
 {% block navbar %}
 {% endblock %}
 <div class="container">
@@ -62,9 +62,13 @@
                        name="name" value="{{ User.first_name }}">
             </div>
             <div class="col-md-6">
-                <label for="surname">Your surname</label>
+                <label for="surname">Your surname*</label>
                 <input readonly type="text" class="form-control" id="surname" aria-describedby="nameHelp"
                        name="surname" value="{{ User.last_name }}">
+                {% if err_surname %}
+                    <p class="text-danger">{{ err_surname }}</p>
+                {% endif %}
+
             </div>
         </div>
         <button type="reset" onclick="SetFields()" id="button_edit" class="btn btn-light">Edit Profile</button>
@@ -72,7 +76,8 @@
         <button type="reset" onclick="ChangePasswordForm()" id="button_password" class="btn btn-light">Edit
             password
         </button>
-        <button type="submit" hidden class="btn btn-light" formmethod="post" id="button_save" formaction="#">Submit
+        <button type="submit" hidden class="btn btn-light" formmethod="post" id="button_save"
+                formaction="/account/profile/">Submit
         </button>
     </form>
     <form id="password_form" class="password_form" hidden>
@@ -127,6 +132,14 @@
         document.getElementById('profile_form').hidden = !document.getElementById('profile_form').hidden;
     }
 
+    function onLoad() {
+        {% if message_change %}
+            alert("{{ message_change }}");
+        {% endif %}
+        {% if error_old_pass or error_pass %}
+            ChangePasswordForm();
+        {% endif %}
+    }
 </script>
 </body>
 </html>

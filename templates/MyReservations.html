@@ -27,6 +27,7 @@
         </div>
     </div>
 </div>
+{% if all_reservations %}
 <div class="row justify-content-center" style="margin-bottom: 15pt">
     <button class="btn btn-secondary" id="past_button" onclick="past_reservations()">Past reservations
     </button>
@@ -36,6 +37,7 @@
     <button class="btn btn-secondary" id="future_button" onclick="future_reservations()">Future reservations
     </button>
 </div>
+
 <div class="col-md-11">
     <table class="table" style="text-align: center">
         <thead class="thead-light" style="color: black">
@@ -56,10 +58,10 @@
                 <td class="class_start" style="color: black;">{{ reservation.start_reservation }}</td>
                 <td class="class_end" style="color: black;">{{ reservation.end_reservation }}</td>
                 <td style="color: black;">{{ reservation.id_room.number }}</td>
-                <form style="display: inline;">{% csrf_token %}
+                <form>{% csrf_token %}
                     <td>
                         <button type="submit" class="btn btn-light" formmethod="post"
-                                formaction="/room/reservations/">Delete
+                                formaction="/room/reservations/delete/{{ reservation.id }}/">Delete
                         </button>
                     </td>
                 </form>
@@ -68,6 +70,16 @@
         </tbody>
     </table>
 </div>
+{% else %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div>
+            <h2 class="mt-2" style="color: rgb(54,151,212)">No reservations yet</h2>
+
+        </div>
+    </div>
+</div>
+{% endif %}
 <script>
     function sort_index() {
         var index = 1;
@@ -151,6 +163,9 @@
     }
 
     function onload() {
+        {% if msg %}
+            alert('{{ msg }}');
+        {% endif %}
         sortdate();
         var butt3 = document.getElementById('future_button').disabled = 'true';
     }

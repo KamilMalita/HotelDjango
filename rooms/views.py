@@ -186,6 +186,9 @@ def hotel_occupancy(request):
     if request.user.is_staff or request.user.is_superuser:
         if request.method == 'POST':
             date_all = request.POST['occupancy_date']
+
+            lista = returned_types(request.POST['occupancy_date'])
+
             date_start = str(date_all).split(':')[0]
             date_end = str(date_all).split(':')[1]
             list_busy_rooms = Reservation.objects.filter(start_reservation__lt=date_end.replace('-', '')).filter(
@@ -197,10 +200,29 @@ def hotel_occupancy(request):
             free_rooms = rooms.exclude(number__in=tab_exclude)
             busy_room = int(len(rooms)) - int(len(free_rooms))
             return render(request, "HotelOccupancy.html",
-                          {'busy_rooms': busy_room, 'all_rooms': len(rooms), 'free_rooms': len(free_rooms)})
+                          {'busy_rooms': busy_room, 'all_rooms': len(rooms), 'free_rooms': len(free_rooms),
+                           'lista': lista})
         return render(request, "HotelOccupancy.html")
     return render(request, "Home.html")
 
+
+def returned_types(date):
+    lista_return = list()
+    date_start = str(date).split(':')[0]
+    date_end = str(date).split(':')[1]
+    types = RoomType.objects.all()
+    for type in types:
+        list_busy_rooms = Reservation.objects.filter(start_reservation__lt=date_end.replace('-', '')).filter(
+            end_reservation__gt=date_start.replace('-', '')).filter(id_room__type_id=type.id)
+        tab_exclude = []
+        for liss in list_busy_rooms:
+            tab_exclude.append(liss.id_room.number)
+        rooms = Room.objects.all().filter(type_id=type.id)
+        free_rooms = rooms.exclude(number__in=tab_exclude)
+        busy_room = int(len(rooms)) - int(len(free_rooms))
+        lista_return.append({'type': type.name, 'all': len(rooms), 'free': len(free_rooms), 'busy': busy_room})
+        print(f'Wszystkie pokoje w typie {type.name}: {len(rooms)}, wolne: {len(free_rooms)}, zajęte: {busy_room}')
+    return lista_return
 
 def types_room(request):
     if request.user.is_staff or request.user.is_superuser:
@@ -239,3 +261,23 @@ def deletetype(request, type_id):
                 room_delete = RoomType.objects.get(id=type_id)
                 room_delete.delete()
     return HttpResponseRedirect('/room/types/')
+
+
+def deletereservation(request, reservation_id):
+    if request.POST and request.user.is_authenticated:
+        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by('start_reservation')
+        msg = ''
+        access = False
+        if request.user.is_staff or request.user.is_superuser:
+            access = True
+            all_reservations = Reservation.objects.all().order_by('start_reservation')
+        elif Reservation.objects.get(id=reservation_id).id_customer.id == request.user.id:
+            access = True
+        if access:
+            try:
+                Reservation.objects.get(id=reservation_id).delete()
+                msg = 'Reservation has been deleted'
+            except:
+                msg = "Reservation cannot be deleted, no permission or reservation does not exist."
+        return render(request, "MyReservations.html", {'msg': msg, 'all_reservations': all_reservations})
+    return render(request, "Home.html")

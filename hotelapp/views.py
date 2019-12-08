@@ -71,8 +71,13 @@ def profile(request):
                                                                                    first_name=request.POST['name'],
                                                                                    last_name=request.POST['surname'])
         else:
+            err_email = 'Invalid email address'
+            err_surname = 'Invalid email address'
+            if len(request.POST['surname']) < 3:
+                err_email = ''
+                err_surname = 'Surname must be longer that 3 characters'
             user = User.objects.get(username=request.user.username)
-            return render(request, "Profile.html", {'User': user, 'error_email': 'Invalid email address'})
+            return render(request, "Profile.html", {'User': user, 'error_email': err_email, 'err_surname': err_surname})
         user = User.objects.get(username=request.user.username)
         return render(request, "Profile.html", {'User': user})
     if request.user.is_authenticated:
@@ -84,17 +89,23 @@ def profile(request):
 def changepass(request):
     if request.user.is_authenticated and request.method == 'POST':
         error_pass = ''
+        error_old_pass = ''
+        pass_change = ''
         form = RegisterForm(request.POST)
         if form.is_valid():
             if request.POST['password'] == request.POST['password2']:
                 print(request.POST)
-                if request.user.check_password(request.POST['password2']):
-                    print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
-                # user = User.objects.get(username=request.user.username).set_password()
+                if request.user.check_password(request.POST['old_password']):
+                    request.user.set_password(request.POST['password'])
+                    request.user.save()
+                    pass_change = 'Password has been changed'
+                else:
+                    error_old_pass = 'Old password is invalid'
             else:
                 error_pass = 'Passwords must be the same'
         else:
             error_pass = "Passwords must be longer than 8 characters"
         user = User.objects.get(username=request.user.username)
-        return render(request, "Profile.html", {"User": user, "error_pass": error_pass})
+        return render(request, "Profile.html", {"User": user, "error_pass": error_pass,
+                                                "error_old_pass": error_old_pass, "message_change": pass_change})
     return render(request, "Home.html")
