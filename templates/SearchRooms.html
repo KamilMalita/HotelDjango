@@ -27,6 +27,7 @@
     </style>
 </head>
 <body>
+
 {% block navbar %}
 {% endblock %}
 
@@ -55,7 +56,7 @@
                 <span></span> <i class="fa fa-caret-down"></i>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="adults">
             <label style="color: black" for="number">Number of adults:</label>
             <input type="number" class="form-control" id="number" aria-describedby="emailHelp"
                    placeholder="Enter number of adults" name="number" value="2" min="1">
@@ -63,15 +64,25 @@
                 <p class="text-danger">{{ msg }}</p>
             {% endif %}
         </div>
-        <div class="form-group">
+        <div class="form-group" id="kids">
             <label style="color: black" for="numberKids">Number of kids:</label>
             <input type="number" class="form-control" id="numberKids" aria-describedby="emailHelp"
                    placeholder="Enter number of adults" name="numberKids" value="0" min="0">
         </div>
         <div class="form-group">
+            <label style="color: black" for="married">Only married rooms:</label>
+            <input type="checkbox" id="onlymarried" onclick="myFunction2()" name="married">
+        </div>
+    <div class="form-group">
+            <label style="color: black" for="apartment">The possibility of an apartment:</label>
+            <input type="checkbox" id="apartment" name="apartment">
+        </div>
+
+        <div class="form-group">
             <label style="color: black" for="myCheck">Price does not matter:</label>
             <input type="checkbox" id="myCheck" onclick="myFunction()" name="myCheck">
         </div>
+
         <div class="form-group" id="min">
             <label style="color: black" for="price_min">Minimum price for night in room (zł):</label>
             <input type="number" class="form-control" id="price_min" placeholder="Enter price as number"
@@ -99,7 +110,23 @@
         var min = document.getElementById("min");
         var max = document.getElementById("max");
         // If the checkbox is checked, display the output text
-        if (checkBox.checked == true) {
+        if (checkBox.checked === true) {
+            min.style.display = "none"
+            max.style.display = "none"
+        } else {
+            min.style.display = "block"
+            max.style.display = "block"
+
+        }
+    }
+        function myFunction2() {
+        // Get the checkbox
+        var checkBox = document.getElementById("onlymarried");
+        // Get the output text
+        var min = document.getElementById("adults");
+        var max = document.getElementById("kids");
+        // If the checkbox is checked, display the output text
+        if (checkBox.checked === true) {
             min.style.display = "none"
             max.style.display = "none"
         } else {

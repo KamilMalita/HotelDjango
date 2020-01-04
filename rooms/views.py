@@ -90,22 +90,26 @@ def edittypequery(request, type_id):
                         marriage = 'True'
                     old_multiplier = RoomType.objects.get(id=type_id).multiplier
                     type_edit = RoomType.objects.filter(id=type_id).update(name=request.POST['name'], marriage=marriage,
-                                        multiplier=request.POST['multiplier'], apartment=apartment,
-                                        capacityKids=request.POST['capacityKids'],
-                                        capacityAdults=request.POST['capacityAdults'])
+                                                                           multiplier=request.POST['multiplier'],
+                                                                           apartment=apartment,
+                                                                           capacityKids=request.POST['capacityKids'],
+                                                                           capacityAdults=request.POST[
+                                                                               'capacityAdults'])
                     rooms = Room.objects.filter(type_id=type_id)
                     for room in rooms:
-                        Room.objects.filter(id=room.id).update(price=int(room.price/old_multiplier*float(request.POST['multiplier'])))
+                        Room.objects.filter(id=room.id).update(
+                            price=int(room.price / old_multiplier * float(request.POST['multiplier'])))
                     updatemsg = f'Successfully update {request.POST["name"]} room.'
                     types = RoomType.objects.all().order_by('name')
                     return render(request, 'TypesRoom.html', {'updatemsg': updatemsg, 'all_rooms': types})
                 else:
-                    return render(request, "EditType.html", {'TypeEdit': RoomType.objects.get(id=type_id), 'err': form.errors})
+                    return render(request, "EditType.html",
+                                  {'TypeEdit': RoomType.objects.get(id=type_id), 'err': form.errors})
     return HttpResponseRedirect('/room/types/')
 
 
 def reservation(request):
-    if request.user.is_authenticated and request.method == 'POST':
+    if request.method == 'POST':
         print(request.POST)
         date_all = request.POST['customdate']
         date_start = str(date_all).split(':')[0]
@@ -115,20 +119,24 @@ def reservation(request):
         tab_exclude = []
         for liss in list_busy_rooms:
             tab_exclude.append(liss.id_room.number)  # define busy rooms in this date
-        try:
-            x = request.POST['myCheck']
-            rooms = Room.objects.all().exclude(number__in=tab_exclude)
-            rooms = rooms.filter(type__capacityAdults__gte=request.POST['number']).filter(
-                type__capacityKids__gte=request.POST['numberKids'])
-        except:
-            if request.POST['price_min'] > request.POST['price_max']:
+        no_price = request.POST.getlist('myCheck')
+        only_married = request.POST.getlist('married')
+        apartment_too = request.POST.getlist('apartment')
+        rooms = Room.objects.all().exclude(number__in=tab_exclude)
+        print(not len(no_price))
+        if not len(no_price):
+            if int(request.POST['price_min']) > int(request.POST['price_max']):
                 return render(request, "SearchRooms.html", {'price_err': "Minimum price can not be lower than maximum"})
-            rooms = Room.objects.all().filter(price__gte=request.POST['price_min']).filter(
-                price__lte=request.POST['price_max']).exclude(number__in=tab_exclude)
+            rooms = rooms.filter(price__gte=request.POST['price_min']).filter(
+                price__lte=request.POST['price_max'])
+        days = int(date_end.replace('-', '')) - int(date_start.replace('-', ''))
+        if len(only_married):
+            rooms = rooms.filter(type__marriage=True)
+        else:
             rooms = rooms.filter(type__capacityAdults__gte=request.POST['number']).filter(
                 type__capacityKids__gte=request.POST['numberKids'])
-        print(len(rooms))
-        days = int(date_end.replace('-', '')) - int(date_start.replace('-', ''))
+        if not len(apartment_too):
+            rooms = rooms.exclude(type__apartment=True)
         if len(rooms):
             return render(request, "Reservation.html",
                           {'length': days, 'free_rooms': rooms, 'start_date': date_start, 'end_date': date_end})
@@ -138,10 +146,7 @@ def reservation(request):
 
 
 def search(request):
-    if request.user.is_authenticated:
-        return render(request, "SearchRooms.html")
-    else:
-        return redirect('/')
+    return render(request, "SearchRooms.html")
 
 
 def reservation_create(request):
@@ -224,6 +229,7 @@ def returned_types(date):
         print(f'Wszystkie pokoje w typie {type.name}: {len(rooms)}, wolne: {len(free_rooms)}, zajęte: {busy_room}')
     return lista_return
 
+
 def types_room(request):
     if request.user.is_staff or request.user.is_superuser:
         if request.method == 'POST' and request.POST['name'] is not '':
@@ -265,7 +271,8 @@ def deletetype(request, type_id):
 
 def deletereservation(request, reservation_id):
     if request.POST and request.user.is_authenticated:
-        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by('start_reservation')
+        all_reservations = Reservation.objects.all().filter(id_customer_id=request.user.id).order_by(
+            'start_reservation')
         msg = ''
         access = False
         if request.user.is_staff or request.user.is_superuser:
