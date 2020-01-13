@@ -151,7 +151,6 @@ def search(request):
 
 def reservation_create(request):
     if request.method == 'POST' and request.user.is_authenticated:
-        print(request.POST)
         start_date = str(request.POST['start_date']).replace('-', '')
         end_date = str(request.POST['end_date']).replace('-', '')
         room_id = request.POST['room_id']
@@ -169,7 +168,7 @@ def reservation_create(request):
             create_reservation.save()
         except Exception as e:
             print(e)
-        return HttpResponse('<h1>Page was found</h1>')
+        return HttpResponse('Successfully create reservation')
     return redirect('/')
 
 
@@ -185,9 +184,6 @@ def my_reservations(request):
 
 
 def hotel_occupancy(request):
-    """"Documentation for a function.
-    This function returns fundamentals info about occupancy of Hotel.
-    """
     if request.user.is_staff or request.user.is_superuser:
         if request.method == 'POST':
             date_all = request.POST['occupancy_date']
@@ -243,10 +239,12 @@ def types_room(request):
                         apartment = 'True'
                     if request.POST['marriage'] == 'on':
                         marriage = 'True'
-                    new_type = RoomType(name=request.POST['name'], marriage=marriage,
-                                        multiplier=request.POST['multiplier'], apartment=apartment,
-                                        capacityKids=request.POST['capacityKids'],
-                                        capacityAdults=request.POST['capacityAdults'])
+                    new_type = RoomType(name=request.POST['name'],
+                                marriage=marriage,
+                                multiplier=request.POST['multiplier'],
+                                apartment=apartment,
+                                capacityKids=request.POST['capacityKids'],
+                                capacityAdults=request.POST['capacityAdults'])
                     new_type.save()
                 types = RoomType.objects.all().order_by('name')
                 return render(request, "TypesRoom.html",

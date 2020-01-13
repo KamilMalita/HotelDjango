@@ -47,6 +47,7 @@
             <th scope="col">Arrival</th>
             <th scope="col">Departure</th>
             <th scope="col">Number of room</th>
+            <th scope="col">Price of reservation</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
@@ -58,6 +59,7 @@
                 <td class="class_start" style="color: black;">{{ reservation.start_reservation }}</td>
                 <td class="class_end" style="color: black;">{{ reservation.end_reservation }}</td>
                 <td style="color: black;">{{ reservation.id_room.number }}</td>
+                <td style="color: black;">{{ reservation.price_reservation }}</td>
                 <form>{% csrf_token %}
                     <td>
                         <button type="submit" class="btn btn-light" formmethod="post"
